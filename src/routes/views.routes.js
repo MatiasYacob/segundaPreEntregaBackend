@@ -16,8 +16,15 @@ router.get("/chat", (req, res) => {
 });
 
 router.get("/products",async (req, res)=>{
-    const productos = await Product.paginate()
-    console.log(productos);
+    const {page, limit} = req.query
+
+
+
+    const productos = await Product.paginate({},
+        {page: page || 1,
+         limit:limit ||10,
+        });
+    // console.log(productos);
     res.render("productos", {
         productos
     })

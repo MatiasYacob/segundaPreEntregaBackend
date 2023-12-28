@@ -35,7 +35,7 @@ app.engine(
 const httpServer = app.listen(port, () =>
   console.log(`Servidor Express corriendo en el puerto ${port}`)
 );
-const io = new Server(httpServer);
+const io = new Server(httpServer); 
 
 
 

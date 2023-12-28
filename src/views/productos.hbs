@@ -1,30 +1,63 @@
-<div>
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col"> Title </th>
-        <th scope="col"> Description </th>
-        <th scope="col"> ID Mongo </th>
-        <th scope="col"> Price </th>
-        <th scope="col"> Code </th>
-        <th scope="col"> Stock </th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each productos.docs}}
-        <tr>
-          <td> {{this.title}}</td>
-          <td> {{this.description}}</td>
-          <td> {{this._id}}</td>
-          <td><strong>$ {{this.price}}</strong></td>
-          <td> {{this.code}} </td>
-          <td> {{this.stock}}</td>
-        </tr>
-      {{/each}}
-
-    </tbody>
-
-  </table>
- 
+<div class="container mt-4">
+<div class="d-flex justify-content-center align-items-center mt-4">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        {{#if productos.hasPrevPage}}
+        <li class="page-item mr-2"><a class="page-link" href="/products?page={{productos.prevPage}}&&limit=10">Previous</a></li>
+        {{/if}}
+        <p class="btn btn-primary ml-3">
+        Pagina: {{productos.page}} de  {{productos.totalPages}}
+      
+         </p>
+        {{#if productos.hasNextPage}}
+        <li class="page-item ml-2"><a class="page-link" href="/products?page={{productos.nextPage}}&&limit=10">Next</a></li>
+        {{/if}}
+          <p class="btn btn-primary ml-3">
+      Cantidad De Productos: {{productos.totalDocs}}
+      
+    </p>
+      </ul>
+    
+    </nav>
+   
+    
+    
   </div>
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Description</th>
+          <th scope="col">ID Mongo</th>
+          <th scope="col">Price</th>
+          <th scope="col">Code</th>
+          <th scope="col">Stock</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each productos.docs}}
+        <tr>
+          <td>{{this.title}}</td>
+          <td>{{this.description}}</td>
+          <td>{{this._id}}</td>
+          <td><strong>$ {{this.price}}</strong></td>
+          <td>{{this.code}}</td>
+          <td>{{this.stock}}</td>
+<td>
+  <button class="btn btn-danger" onclick="deleteAndReload('{{this._id}}')">Eliminar</button>
+</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+
+ 
 </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="../public/main.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
