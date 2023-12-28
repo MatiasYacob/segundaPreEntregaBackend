@@ -81,6 +81,14 @@ function deleteProduct(_id) {
 // Función para agregar un producto al carrito
 function  AddProductToCart(_id){
   socket.emit("AddProduct_toCart", _id)
+  Swal.fire({
+    position: 'top-end',
+    icon: 'success',
+    title: '¡Producto Agregado!',
+    showConfirmButton: false,
+    timer: 1500,
+    toast: true,
+  });
 }
 
 // Manejo de errores en la conexión con el servidor
@@ -126,7 +134,7 @@ function askForNameAndSendMessage(message) {
   });
 }
 
-askForNameAndSendMessage(""); // Llama al inicio para solicitar el nombre del usuario
+; // Llama al inicio para solicitar el nombre del usuario
 
 // Captura del cuadro de chat y escucha del evento de tecla "Enter"
 const chatbox = document.getElementById("chatbox");

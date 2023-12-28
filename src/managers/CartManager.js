@@ -1,7 +1,7 @@
 import { Cart } from "../dao/models/cart.model.js";
 import { Product } from "../dao/models/product.model.js";
 import ProductManager from "./ProductManager.js";
-
+import Swal from "sweetalert2";
 const Pmanager = new ProductManager();
 
 class CartManager {
@@ -29,6 +29,11 @@ class CartManager {
                 return newCart;
             }
 
+            
+              
+
+
+
             // Si existe un carrito, verifica si el producto ya está en el carrito
             const existingProduct = cart.products.find(item => String(item.productId) === String(_id));
                 console.log("aca"+ cart.products);
@@ -42,6 +47,7 @@ class CartManager {
 
             await cart.save();
             console.log(`Producto ${_id} agregado al carrito exitosamente.`);
+           
             return cart;
         } catch (error) {
             console.error('Error al agregar producto al carrito:', error);
