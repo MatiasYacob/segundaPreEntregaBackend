@@ -1,0 +1,30 @@
+<div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col"> Title </th>
+        <th scope="col"> Description </th>
+        <th scope="col"> ID Mongo </th>
+        <th scope="col"> Price </th>
+        <th scope="col"> Code </th>
+        <th scope="col"> Stock </th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each productos.docs}}
+        <tr>
+          <td> {{this.title}}</td>
+          <td> {{this.description}}</td>
+          <td> {{this._id}}</td>
+          <td><strong>$ {{this.price}}</strong></td>
+          <td> {{this.code}} </td>
+          <td> {{this.stock}}</td>
+        </tr>
+      {{/each}}
+
+    </tbody>
+
+  </table>
+ 
+  </div>
+</div>
