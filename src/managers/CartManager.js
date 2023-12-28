@@ -30,7 +30,8 @@ class CartManager {
             }
 
             // Si existe un carrito, verifica si el producto ya está en el carrito
-            const existingProduct = cart.products.find(item => String(item.Id) === _id);
+            const existingProduct = cart.products.find(item => String(item.productId) === String(_id));
+                console.log("aca"+ cart.products);
 
             if (existingProduct) {
                 existingProduct.quantity += 1;
