@@ -1,6 +1,5 @@
 
 
-import mongoose from 'mongoose';
  
 import { Product } from '../dao/models/product.model.js';
 

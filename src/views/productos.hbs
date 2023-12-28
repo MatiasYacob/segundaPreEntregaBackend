@@ -46,7 +46,8 @@
           <td>{{this.code}}</td>
           <td>{{this.stock}}</td>
 <td>
-  <button class="btn btn-success" > Agregar al Carrito </button>
+  <button class="btn btn-primary" onclick="AddProductToCart('{{this._id}}')">Add to Cart</button>
+
   <button class="btn btn-danger" onclick="deleteAndReload('{{this._id}}')">Eliminar</button>
 </td>
         </tr>

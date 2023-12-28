@@ -78,6 +78,10 @@ function reloadPage() {
 function deleteProduct(_id) {
   socket.emit("delete_product", _id);
 }
+// Función para agregar un producto al carrito
+function  AddProductToCart(_id){
+  socket.emit("AddProduct_toCart", _id)
+}
 
 // Manejo de errores en la conexión con el servidor
 socket.on("connect_error", (error) => {

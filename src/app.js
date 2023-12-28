@@ -12,13 +12,14 @@ import MessageManager from './managers/MessageManager.js';
 import { initializeApp } from './appInitialization.js';
 import Handlebars from "handlebars";
 import { allowInsecurePrototypeAccess } from "@handlebars/allow-prototype-access";
-
+import CartManager from './managers/CartManager.js';
 
 
 
 // Creación de la aplicación Express
 const app = express();
 const port = 8080;
+const cManager = new CartManager();
 const pManager = new ProductManager(); // Instancia de ProductManager sin pasar un archivo JSON
 
 // Configuración de Handlebars como motor de vistas
@@ -91,6 +92,27 @@ io.on('connection', async (socket) => {
         console.log(error);
       }
     });
+
+      //agregar al carrito
+      socket.on('AddProduct_toCart', async ( _id ) => {
+        try {
+          console.log("id del producto" + _id);
+          const addProduct = await cManager.AddProductToCart(_id);
+          if (addProduct) {
+            console.log('Producto agregado al carrito:', addProduct);
+          } else {
+            console.log('El producto no pudo ser agregado al carrito.');
+          }
+        } catch (error) {
+          console.error('Error al agregar el producto:', error);
+        }
+      });
+      
+
+
+
+
+
 
     // Escuchar la solicitud de eliminación de un producto
     socket.on('delete_product', async (_id) => {
