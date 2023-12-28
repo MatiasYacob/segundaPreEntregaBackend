@@ -22,9 +22,9 @@ class ProductManager {
         }
     }
 
-    async updateProduct(pid, updatedProduct) {
+    async updateProduct(_id, updatedProduct) {
         try {
-            const product = await Product.findByIdAndUpdate(pid, updatedProduct, { new: true });
+            const product = await Product.findByIdAndUpdate(_id, updatedProduct, { new: true });
             if (!product) {
                 console.log('El producto no existe.');
                 return null;
@@ -65,9 +65,9 @@ class ProductManager {
         }
     }
 
-    async getProductBypid(pid) {
+    async getProductBy_id(_id) {
         try {
-            const product = await Product.findById(pid);
+            const product = await Product.findById(_id);
             return product || null;
         } catch (error) {
             console.error('Error al obtener el producto por ID:', error);

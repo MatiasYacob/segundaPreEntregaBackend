@@ -2,7 +2,7 @@ import { Router } from "express";
 import CartManager from "../managers/CartManager.js";
 
 const router = Router();
-const manager = new CartManager("cart.json", "products.json");
+const manager = new CartManager();
 
 router.post("/", async (req, res) => {
     // Generar un cid único para el carrito
