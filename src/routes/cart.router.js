@@ -26,3 +26,24 @@ router.post('/', async (req, res) => {
 });
 
 export default router;
+
+
+
+
+
+
+router.delete('/:_id', async (req, res) => {
+    try {
+        const productId = req.params._id;
+        const result = await manager.removeProductFromCart(productId);
+
+        if (!result.success) {
+            return res.status(404).json({ success: false, message: result.message });
+        }
+
+        res.json({ success: true, message: `Producto ${productId} eliminado del carrito` });
+    } catch (error) {
+        console.error('Error al eliminar producto del carrito:', error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+});

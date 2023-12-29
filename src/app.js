@@ -108,7 +108,22 @@ io.on('connection', async (socket) => {
           console.error('Error al agregar el producto:', error);
         }
       });
-      
+      //Borrar del carrito
+      socket.on('Borrar_delCarrito',async(_id) =>{
+        try {
+          console.log("id del producto" + _id);
+        const productoBorrado = await cManager.removeProductFromCart(_id);
+
+        if(productoBorrado){
+          console.log("Producto borrado:", productoBorrado);
+        }else{
+          console.log('El producto no pudo se pudo borrar');
+        }
+        }catch(error){
+          console.error('error al borrar', error)
+        }
+
+      });
 
 
 

@@ -13,22 +13,58 @@ const router = Router();
 //Muestra todo los Productos en el Json de Productos GET
 router.get('/', async (req, res) => {
     try {
-        const { limit } = req.query;
-        let productsToSend = await manager.getProducts(); // Espera a que se resuelva la operación asíncrona
+        const { limit = 10, page = 1, sort, query } = req.query;
+        let productsToSend = await manager.getProducts(); // Obtener todos los productos
 
-        if (limit) {
-            const parsedLimit = parseInt(limit);
-            if (!isNaN(parsedLimit)) {
-                productsToSend = productsToSend.slice(0, parsedLimit);
-            }
+        // Aplicar el filtro según el parámetro 'query' (nombre del producto)
+        if (query) {
+            productsToSend = productsToSend.filter(product =>
+                product.title.toLowerCase().includes(query.toLowerCase())
+            );
         }
 
-        res.json(productsToSend);
+        // Aplicar ordenamiento ascendente o descendente según el parámetro 'sort'
+        if (sort && (sort === 'asc' || sort === 'desc')) {
+            productsToSend.sort((a, b) => {
+                if (sort === 'asc') {
+                    return a.price - b.price;
+                } else {
+                    return b.price - a.price;
+                }
+            });
+        }
+
+        // Calcular el total de páginas
+        const totalPages = Math.ceil(productsToSend.length / limit);
+
+        // Calcular el índice de inicio y final para la paginación
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        // Obtener los productos para la página específica después del filtrado y ordenamiento
+        const paginatedProducts = productsToSend.slice(startIndex, endIndex);
+
+        // Crear el objeto de respuesta con información de paginación
+        const responseObject = {
+            status: 'success',
+            payload: paginatedProducts,
+            totalPages: totalPages,
+            prevPage: page > 1 ? page - 1 : null,
+            nextPage: page < totalPages ? page + 1 : null,
+            page: page,
+            hasPrevPage: page > 1,
+            hasNextPage: page < totalPages,
+            prevLink: page > 1 ? `/api/product?limit=${limit}&page=${page - 1}` : null,
+            nextLink: page < totalPages ? `/api/product?limit=${limit}&page=${page + 1}` : null,
+        };
+
+        res.json(responseObject);
     } catch (error) {
         console.error('Error al obtener los productos:', error);
-        res.status(500).json({ error: 'Error al obtener los productos' });
+        res.status(500).json({ status: 'error', error: 'Error al obtener los productos' });
     }
 });
+
 
 
 //Muestra un producto por _id GET

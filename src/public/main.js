@@ -73,7 +73,7 @@ socket.on("cart_productos", (data) =>{
        
         <p class="card-text">Cantidad: ${producto.quantity}</p>
         <p class="card-text">ID: ${producto._id}</p>
-        <button class="btn btn-danger" onclick="deleteProduct('${producto._id}')">Eliminar</button>
+        <button class="btn btn-danger" onclick="removeProductFromCart('${producto._id}')">Eliminar</button>
       </div>
     `;
     products.appendChild(productElement);
@@ -126,6 +126,16 @@ function  AddProductToCart(_id){
     toast: true,
   });
 }
+
+//Funcion para borrar productos del carrito
+function removeProductFromCart(_id){
+  socket.emit("Borrar_delCarrito", _id)
+
+
+}
+
+
+
 
 // Manejo de errores en la conexión con el servidor
 socket.on("connect_error", (error) => {
