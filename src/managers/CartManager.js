@@ -5,6 +5,31 @@ import Swal from "sweetalert2";
 const Pmanager = new ProductManager();
 
 class CartManager {
+
+    async getProductsInCart() {
+        try {
+            // Buscar el carrito existente
+            const cart = await Cart.findOne({});
+            
+            if (!cart) {
+                console.log('No se encontró un carrito.');
+                return [];
+            }
+
+            // Devolver la lista de productos en el carrito
+            return cart.products;
+            console.log(cart.products);
+        } catch (error) {
+            console.error('Error al obtener productos del carrito:', error);
+            return null;
+        }
+    }
+
+
+
+
+
+
     async AddProductToCart(_id) {
         try {
             // Obtener el producto con la ID proporcionada

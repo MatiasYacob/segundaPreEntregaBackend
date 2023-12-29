@@ -56,6 +56,42 @@ socket.on("productos", (data) => {
   });
 });
 
+socket.on("cart_productos", (data) =>{
+
+  const products = document.querySelector("#products_carrito"); 
+  products.innerHTML = "";
+  data.forEach((producto) => {
+    const productElement = document.createElement("div");
+    productElement.classList.add("card", "m-2", "col-md-4", "bg-light", "border", "border-primary"); // Clases de Bootstrap para el estilo
+    productElement.innerHTML = `
+      <div class="card-body">
+        
+        
+        
+        
+        
+       
+        <p class="card-text">Cantidad: ${producto.quantity}</p>
+        <p class="card-text">ID: ${producto._id}</p>
+        <button class="btn btn-danger" onclick="deleteProduct('${producto._id}')">Eliminar</button>
+      </div>
+    `;
+    products.appendChild(productElement);
+  });
+
+
+})
+
+
+
+
+
+
+
+
+
+
+
 
 // Función para eliminar un producto y recargar la página después de la eliminación
 function deleteAndReload(productId) {

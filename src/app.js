@@ -71,8 +71,9 @@ io.on('connection', async (socket) => {
 
   try {
     // Emitir los productos al cliente cuando se conecta
-    socket.emit('productos', await pManager.getProducts());
+    socket.emit('productos', await pManager.getProducts()); 
 
+    socket.emit('cart_productos', await cManager.getProductsInCart());
     // Escuchar la creación de nuevos productos
     socket.on('post_send', async (data) => {
       try {
