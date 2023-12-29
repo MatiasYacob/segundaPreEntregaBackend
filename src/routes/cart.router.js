@@ -25,13 +25,26 @@ router.post('/', async (req, res) => {
     }
 });
 
-export default router;
 
 
+// Endpoint DELETE para eliminar todos los productos del carrito
+// En tu controlador de Express para la eliminación de todos los productos del carrito
+router.delete('/', async (req, res) => {
+    try {
+        const result = await manager.removeAllProductsFromCart();
 
+        if (!result.success) {
+            return res.status(404).json({ success: false, message: result.message });
+        }
 
+        res.json({ success: true, message: 'Todos los productos eliminados del carrito' });
+    } catch (error) {
+        console.error('Error al eliminar todos los productos del carrito:', error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+});
 
-
+//borra un producto en particular del carrito
 router.delete('/:_id', async (req, res) => {
     try {
         const productId = req.params._id;
@@ -47,3 +60,30 @@ router.delete('/:_id', async (req, res) => {
         res.status(500).json({ success: false, message: 'Error interno del servidor' });
     }
 });
+
+
+
+//Actualizar la cantidad del producto
+router.put('/:_id', async (req, res) => {
+    try {
+        const productId = req.params._id;
+        const { quantity } = req.body;
+
+        if (!quantity || isNaN(quantity)) {
+            return res.status(400).json({ success: false, message: 'La cantidad debe ser un número válido' });
+        }
+
+        const result = await manager.updateProductQuantity(productId, Number(quantity));
+
+        if (!result.success) {
+            return res.status(404).json({ success: false, message: result.message });
+        }
+
+        res.json({ success: true, message: `Cantidad del producto ${productId} actualizada en el carrito` });
+    } catch (error) {
+        console.error('Error al actualizar cantidad del producto en el carrito:', error);
+        res.status(500).json({ success: false, message: 'Error interno del servidor' });
+    }
+});
+
+export default router;

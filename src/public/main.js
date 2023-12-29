@@ -130,6 +130,7 @@ function  AddProductToCart(_id){
 //Funcion para borrar productos del carrito
 function removeProductFromCart(_id){
   socket.emit("Borrar_delCarrito", _id)
+  reloadPage()
 
 
 }
