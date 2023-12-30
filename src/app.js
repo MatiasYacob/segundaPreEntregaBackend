@@ -19,18 +19,21 @@ import CartManager from './managers/CartManager.js';
 // Creación de la aplicación Express
 const app = express();
 const port = 8080;
+
+// Instancias de los managers
 const cManager = new CartManager();
 const pManager = new ProductManager(); // Instancia de ProductManager sin pasar un archivo JSON
+const messageManager = new MessageManager();
 
 // Configuración de Handlebars como motor de vistas
 app.engine(
-    "hbs",
-    handlebars.engine({
-      extname: "hbs",
-      defaultLayout: "main",
-      handlebars: allowInsecurePrototypeAccess(Handlebars),
-    })
-  );
+  "hbs",
+  handlebars.engine({
+    extname: "hbs",
+    defaultLayout: "main",
+    handlebars: allowInsecurePrototypeAccess(handlebars),
+  })
+);
 
 // Creación del servidor HTTP y Socket.IO
 const httpServer = app.listen(port, () =>
@@ -40,29 +43,21 @@ const io = new Server(httpServer);
 
 
 
+//IMPORTANTE!! IMPORTANTE!! IMPORTANTE!! IMPORTANTE!!
 // Conexión a la base de datos MongoDB a través de Mongoose
-mongoose.connect(
-  'mongodb+srv://matiasyacob27m:1234567812@clusterdesafio15.qwijtbv.mongodb.net/ClusterDesafio15'
-).then(() => {
-  console.log('DB connected');
-}).catch((err) => {
-  console.log('Hubo un error');
-  console.log(err);
-});
+mongoose.connect('mongodb+srv://matiasyacob27m:1234567812@clusterdesafio15.qwijtbv.mongodb.net/ClusterDesafio15')
+  .then(() => console.log('DB connected'))
+  .catch((err) => {
+    console.log('Hubo un error');
+    console.log(err);
+  });
 
-
-
-
-
-
-
+// Inicialización de la aplicación y configuraciones
 initializeApp(app, __dirname);
-
-
 
 // Definición de rutas para la API y las vistas
 app.use('/api/product', productRouter);
-app.use('/api/cart', cartRouter);
+app.use('/api/carts', cartRouter);
 app.use('/', viewsRouter);
 
 // Manejo de eventos de conexión y operaciones relacionadas con Socket.IO
@@ -72,12 +67,55 @@ io.on('connection', async (socket) => {
   try {
     // Emitir los productos al cliente cuando se conecta
     socket.emit('productos', await pManager.getProducts()); 
-
     socket.emit('cart_productos', await cManager.getProductsInCart());
-    // Escuchar la creación de nuevos productos
+
+    // Manejo de eventos de agregar producto al carrito y eliminar producto del carrito
+    socket.on('AddProduct_toCart', async (_id) => {
+      try {
+        console.log("id del producto" + _id);
+        const addProduct = await cManager.AddProductToCart(_id);
+        if (addProduct) {
+          console.log('Producto agregado al carrito:', addProduct);
+        } else {
+          console.log('El producto no pudo ser agregado al carrito.');
+        }
+      } catch (error) {
+        console.error('Error al agregar el producto:', error);
+      }
+    });
+
+    socket.on('Borrar_delCarrito', async (_id) => {
+      try {
+        console.log("id del producto" + _id);
+        const productoBorrado = await cManager.removeProductFromCart(_id);
+
+        if (productoBorrado) {
+          console.log("Producto borrado:", productoBorrado);
+        } else {
+          console.log('El producto no pudo ser borrado del carrito');
+        }
+      } catch (error) {
+        console.error('error al borrar', error)
+      }
+    });
+
+    // Manejo de eventos de eliminación y creación de productos
+    socket.on('delete_product', async (_id) => {
+      try {
+        const deletedProduct = await pManager.deleteProduct(_id);
+        if (deletedProduct) {
+          console.log('Producto eliminado:', deletedProduct);
+          socket.emit('productos', await pManager.getProducts());
+        } else {
+          console.log('El producto no existe o no se pudo eliminar.');
+        }
+      } catch (error) {
+        console.error('Error al eliminar el producto:', error);
+      }
+    });
+
     socket.on('post_send', async (data) => {
       try {
-        // Crear un nuevo producto y emitir la lista actualizada al cliente
         const product = {
           price: Number(data.price),
           stock: Number(data.stock),
@@ -94,85 +132,26 @@ io.on('connection', async (socket) => {
       }
     });
 
-      //agregar al carrito
-      socket.on('AddProduct_toCart', async ( _id ) => {
-        try {
-          console.log("id del producto" + _id);
-          const addProduct = await cManager.AddProductToCart(_id);
-          if (addProduct) {
-            console.log('Producto agregado al carrito:', addProduct);
-          } else {
-            console.log('El producto no pudo ser agregado al carrito.');
-          }
-        } catch (error) {
-          console.error('Error al agregar el producto:', error);
-        }
-      });
-      //Borrar del carrito
-      socket.on('Borrar_delCarrito',async(_id) =>{
-        try {
-          console.log("id del producto" + _id);
-        const productoBorrado = await cManager.removeProductFromCart(_id);
-
-        if(productoBorrado){
-          console.log("Producto borrado:", productoBorrado);
-        }else{
-          console.log('El producto no pudo se pudo borrar');
-        }
-        }catch(error){
-          console.error('error al borrar', error)
-        }
-
-      });
-
-
-
-
-
-
-    // Escuchar la solicitud de eliminación de un producto
-    socket.on('delete_product', async (_id) => {
+    // Manejo de mensajes con Socket.IO
+    socket.on('message', async (data) => {
+      messages.push(data);
+      io.emit('messages', messages);
       try {
-        // Eliminar el producto por su ID y emitir la lista actualizada al cliente
-        const deletedProduct = await pManager.deleteProduct(_id);
-        if (deletedProduct) {
-          console.log('Producto eliminado:', deletedProduct);
-          socket.emit('productos', await pManager.getProducts());
-        } else {
-          console.log('El producto no existe o no se pudo eliminar.');
-        }
+        await messageManager.addMessage(data);
+        console.log('Mensaje guardado en la base de datos.');
       } catch (error) {
-        console.error('Error al eliminar el producto:', error);
+        console.error('Error al guardar el mensaje:', error);
       }
     });
+
+    socket.on('newUser', (username) => {
+      socket.broadcast.emit('userConnected', username);
+    });
+
+    socket.emit('messages', messages);
   } catch (error) {
     console.error(error);
   }
-});
-
-// Manejo de mensajes con Socket.IO
-const messages = [];
-const messageManager = new MessageManager();
-io.on('connection', (socket) => {
-  // Emitir evento cuando un nuevo usuario se conecta
-  socket.on('newUser', (username) => {
-    socket.broadcast.emit('userConnected', username);
-  });
-
-  // Manejar los mensajes enviados por los usuarios
-  socket.on('message', async (data) => {
-    messages.push(data);
-    io.emit('messages', messages);
-    try {
-      await messageManager.addMessage(data);
-      console.log('Mensaje guardado en la base de datos.');
-    } catch (error) {
-      console.error('Error al guardar el mensaje:', error);
-    }
-  });
-
-  // Emitir mensajes existentes a un nuevo cliente
-  socket.emit('messages', messages);
 });
 
 // Exportar la aplicación Express

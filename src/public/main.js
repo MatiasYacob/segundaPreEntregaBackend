@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-  
+
 // Manejo de la recepción de datos de productos desde el servidor y actualización de la interfaz
 socket.on("productos", (data) => {
   const products = document.querySelector("#products");
@@ -56,21 +56,19 @@ socket.on("productos", (data) => {
   });
 });
 
-socket.on("cart_productos", (data) =>{
 
-  const products = document.querySelector("#products_carrito"); 
+
+// Iterando sobre los productos recibidos para mostrarlos en la interfaz del carrito
+
+socket.on("cart_productos", (data) => {
+
+  const products = document.querySelector("#products_carrito");
   products.innerHTML = "";
   data.forEach((producto) => {
     const productElement = document.createElement("div");
     productElement.classList.add("card", "m-2", "col-md-4", "bg-light", "border", "border-primary"); // Clases de Bootstrap para el estilo
     productElement.innerHTML = `
       <div class="card-body">
-        
-        
-        
-        
-        
-       
         <p class="card-text">Cantidad: ${producto.quantity}</p>
         <p class="card-text">ID: ${producto._id}</p>
         <button class="btn btn-danger" onclick="removeProductFromCart('${producto._id}')">Eliminar</button>
@@ -81,15 +79,6 @@ socket.on("cart_productos", (data) =>{
 
 
 })
-
-
-
-
-
-
-
-
-
 
 
 
@@ -115,7 +104,7 @@ function deleteProduct(_id) {
   socket.emit("delete_product", _id);
 }
 // Función para agregar un producto al carrito
-function  AddProductToCart(_id){
+function AddProductToCart(_id) {
   socket.emit("AddProduct_toCart", _id)
   Swal.fire({
     position: 'top-end',
@@ -128,7 +117,7 @@ function  AddProductToCart(_id){
 }
 
 //Funcion para borrar productos del carrito
-function removeProductFromCart(_id){
+function removeProductFromCart(_id) {
   socket.emit("Borrar_delCarrito", _id)
   reloadPage()
 
@@ -205,7 +194,7 @@ chatbox.addEventListener("keyup", (e) => {
   }
 });
 
-// Manejo de eventos del servidor
+
 
 // Notificación de nuevo usuario conectado
 socket.on("userConnected", (username) => {

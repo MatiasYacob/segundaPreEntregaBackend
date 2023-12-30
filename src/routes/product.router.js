@@ -10,7 +10,7 @@ const manager = new ProductManager();
 const router = Router();
 
 
-//Muestra todo los Productos en el Json de Productos GET
+//Muestra todo los Productos en de la BD de mongo
 router.get('/', async (req, res) => {
     try {
         const { limit = 10, page = 1, sort, query } = req.query;
@@ -64,8 +64,6 @@ router.get('/', async (req, res) => {
         res.status(500).json({ status: 'error', error: 'Error al obtener los productos' });
     }
 });
-
-
 
 //Muestra un producto por _id GET
 router.get('/:_id', async (req, res) => {

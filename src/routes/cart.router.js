@@ -4,6 +4,8 @@ import CartManager from "../managers/CartManager.js";
 const router = Router();
 const manager = new CartManager();
 
+
+//Endpoint POST para crear un carrito con una lista de productos
 router.post('/', async (req, res) => {
     try {
         const { products } = req.body;
@@ -25,10 +27,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-
-
-// Endpoint DELETE para eliminar todos los productos del carrito
-// En tu controlador de Express para la eliminación de todos los productos del carrito
+//Endpoint DELETE para eliminar todos los productos del carrito
 router.delete('/', async (req, res) => {
     try {
         const result = await manager.removeAllProductsFromCart();
@@ -44,7 +43,7 @@ router.delete('/', async (req, res) => {
     }
 });
 
-//borra un producto en particular del carrito
+//Endpoint DELETE para eliminar un producto en particular del carrito por su ID
 router.delete('/:_id', async (req, res) => {
     try {
         const productId = req.params._id;
@@ -61,9 +60,7 @@ router.delete('/:_id', async (req, res) => {
     }
 });
 
-
-
-//Actualizar la cantidad del producto
+//Endpoint PUT para actualizar la cantidad de un producto en el carrito por su ID
 router.put('/:_id', async (req, res) => {
     try {
         const productId = req.params._id;
@@ -86,4 +83,51 @@ router.put('/:_id', async (req, res) => {
     }
 });
 
+//Endpoint para actualizar el carrito con un arreglo de productos
+router.put('/cart/:_id', async (req, res) => {
+    try {
+        const cartId = req.params._id;
+        const { products } = req.body;
+
+        // Verificar si el arreglo de productos es válido
+        if (!Array.isArray(products)) {
+            return res.status(400).json({ error: 'El formato del arreglo de productos es inválido' });
+        }
+
+        // Llamar al método para actualizar el carrito con el nuevo arreglo de productos
+        const updatedCart = await manager.updateCart(cartId, products);
+
+        if (!updatedCart) {
+            return res.status(500).json({ error: 'Error al actualizar el carrito' });
+        }
+
+        return res.status(200).json(updatedCart);
+    } catch (error) {
+        console.error('Error al actualizar el carrito:', error);
+        return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+//Endpoint GET para obtener los productos paginados de un carrito por su ID
+router.get('/cart/:cid', async (req, res) => {
+    try {
+        const { cid } = req.params;
+        let { page, limit } = req.query;
+
+        // Establecer valores predeterminados si los parámetros no se proporcionan
+        page = page || 1;
+        limit = limit || 10;
+
+        // Llamar al método en CartManager para obtener los productos paginados del carrito
+        const result = await manager.getProductsInCartWithDetails(cid, page, limit);
+
+        return res.json(result);
+    } catch (error) {
+        console.error('Error al obtener productos del carrito:', error);
+        return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+
+//Export
 export default router;

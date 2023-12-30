@@ -1,14 +1,11 @@
-
-
- 
 import { Product } from '../dao/models/product.model.js';
-
 
 class ProductManager {
     constructor() {
-        
+        // Puede añadirse alguna lógica inicial aquí si es necesario.
     }
-
+    
+    // Agrega un nuevo producto a la base de datos.
     async addProduct(producto) {
         try {
             const newProduct = new Product(producto);
@@ -21,6 +18,7 @@ class ProductManager {
         }
     }
 
+    // Actualiza un producto existente basado en su ID.
     async updateProduct(_id, updatedProduct) {
         try {
             const product = await Product.findByIdAndUpdate(_id, updatedProduct, { new: true });
@@ -36,24 +34,23 @@ class ProductManager {
         }
     }
 
+    // Elimina un producto basado en su ID.
     async deleteProduct(_id) {
         try {
             const product = await Product.findByIdAndDelete(_id);
-          
             if (!product) {
                 console.log('El producto no existe.');
                 return null;
             }
             console.log('Producto eliminado exitosamente.');
-            
             return product;
-            
         } catch (error) {
             console.error('Error al eliminar el producto:', error);
             return null;
         }
     }
 
+    // Obtiene todos los productos de la base de datos.
     async getProducts() {
         try {
             const products = await Product.find();
@@ -64,6 +61,7 @@ class ProductManager {
         }
     }
 
+    // Obtiene un producto por su ID específico.
     async getProductBy_id(_id) {
         try {
             const product = await Product.findById(_id);
@@ -75,5 +73,5 @@ class ProductManager {
     }
 }
 
-// Exportar la clase ProductManager
+// Exporta la clase ProductManager.
 export default ProductManager;

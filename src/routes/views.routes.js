@@ -1,22 +1,27 @@
+//Imports de paquetes y modelos
 import { Router } from "express";
 import { Product } from "../dao/models/product.model.js";
 import { Cart } from "../dao/models/cart.model.js";
 
+// Creación de un enrutador
 const router = Router();
 
+// Ruta para renderizar la página de inicio
 router.get("/", (req, res) => {
-    res.render("home.hbs")
-})
+    res.render("home.hbs");
+});
 
+// Ruta para renderizar la página de productos en tiempo real
 router.get("/realtimeproducts", (req, res) => {
-    res.render("product.hbs")
-})
+    res.render("product.hbs");
+});
 
+// Ruta para renderizar la página de chat
 router.get("/chat", (req, res) => {
     res.render("chat.hbs");
 });
 
-
+// Ruta para obtener y renderizar los productos en el carrito
 router.get("/cart", async (req, res) => {
     const { page, limit } = req.query;
 
@@ -38,22 +43,18 @@ router.get("/cart", async (req, res) => {
     }
 });
 
+// Ruta para obtener y renderizar la lista de productos paginados
+router.get("/products", async (req, res) => {
+    const { page, limit } = req.query;
 
-router.get("/products",async (req, res)=>{
-    const {page, limit} = req.query
+    const productos = await Product.paginate({}, {
+        page: page || 1,
+        limit: limit || 10,
+    });
 
-
-
-    const productos = await Product.paginate({},
-        {page: page || 1,
-         limit:limit ||10,
-        });
-    // console.log(productos);
     res.render("productos", {
         productos
-    })
-})
-
-
+    });
+});
 
 export default router;
